@@ -22,11 +22,12 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { UserRole } from './user-role.enum';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post()
+  @Roles(UserRole.superadmin)
   @HttpCode(HttpStatus.CREATED) // HTTP 201 for creation
   async createUser(
     @Body() createUserDto: CreateUserDto,
@@ -41,7 +42,6 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(RolesGuard)
   @Roles(UserRole.superadmin)
   @HttpCode(HttpStatus.OK) // HTTP 200 for success
   async getUsers(): Promise<JsonResponse<User[]>> {
@@ -54,9 +54,8 @@ export class UsersController {
     );
   }
 
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.manager)
   @Get(':id')
+  @Roles(UserRole.superadmin)
   @HttpCode(HttpStatus.OK) // HTTP 200 for success
   async getUserById(@Param('id') id: number): Promise<JsonResponse<User>> {
     const user = await this.userService.getUserById(id);
@@ -75,6 +74,7 @@ export class UsersController {
   }
 
   @Put(':id')
+  @Roles(UserRole.superadmin)
   @HttpCode(HttpStatus.OK) // HTTP 200 for success
   async updateUser(
     @Param('id') id: number,
@@ -90,6 +90,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles(UserRole.superadmin)
   @HttpCode(HttpStatus.OK) // Return 200 for successful operation
   async deleteUser(@Param('id') id: number): Promise<JsonResponse<void>> {
     const user = await this.userService.getUserById(id);

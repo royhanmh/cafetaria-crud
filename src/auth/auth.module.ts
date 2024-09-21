@@ -10,7 +10,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
   imports: [
     UsersModule,
     JwtModule.register({
-      secret: 'your_jwt_secret',
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1000m' },
     }),
   ],

@@ -16,9 +16,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 import { createJsonResponse, JsonResponse } from 'src/CreateJsonResponse.util';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/role.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
 import { UserRole } from './user-role.enum';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
@@ -37,6 +41,8 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.superadmin)
   @HttpCode(HttpStatus.OK) // HTTP 200 for success
   async getUsers(): Promise<JsonResponse<User[]>> {
     const users = await this.userService.getUsers();
@@ -48,6 +54,8 @@ export class UsersController {
     );
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.manager)
   @Get(':id')
   @HttpCode(HttpStatus.OK) // HTTP 200 for success
   async getUserById(@Param('id') id: number): Promise<JsonResponse<User>> {

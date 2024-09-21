@@ -15,5 +15,5 @@ export class CreateUserDto {
   password: string;
 
   @IsEnum(UserRole)
-  role?: UserRole; // Optional, defaults to UserRole.manager
+  role?: UserRole;
 }

@@ -8,6 +8,7 @@ import { User } from './users/entities/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { CafesModule } from './cafes/cafes.module';
 import { Cafe } from './cafes/entities/cafe.entity';
+import { MenusModule } from './menus/menus.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { Cafe } from './cafes/entities/cafe.entity';
     UsersModule,
     CafesModule,
     AuthModule,
+    MenusModule,
   ],
   controllers: [AppController],
   providers: [AppService],

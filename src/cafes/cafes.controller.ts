@@ -31,11 +31,11 @@ import { UserRole } from 'src/users/user-role.enum';
 @ApiTags('cafes') // Tag for grouping in Swagger UI
 @ApiBearerAuth()
 @Controller('cafes')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class CafesController {
   constructor(private readonly cafesService: CafesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new cafe' }) // Summary for the operation
@@ -102,6 +102,7 @@ export class CafesController {
   }
 
   @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a cafe by ID' })
@@ -134,6 +135,7 @@ export class CafesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delete a cafe by ID' })

@@ -20,7 +20,15 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/role.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { UserRole } from 'src/users/user-role.enum';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
+@ApiTags('menus')
+@ApiBearerAuth()
 @Controller('menus')
 export class MenusController {
   constructor(private readonly menusService: MenusService) {}
@@ -29,6 +37,15 @@ export class MenusController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.manager, UserRole.superadmin)
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new menu' })
+  @ApiResponse({
+    status: 201,
+    description: 'Menu created successfully',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
   async create(
     @Body() createMenuDto: CreateMenuDto,
     @Request() req,
@@ -49,7 +66,12 @@ export class MenusController {
   }
 
   @Get()
-  @HttpCode(HttpStatus.OK) // HTTP 200 for success
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Retrieve all menus' })
+  @ApiResponse({
+    status: 200,
+    description: 'Menus retrieved successfully',
+  })
   async findAll(): Promise<JsonResponse<any[]>> {
     const menus = await this.menusService.findAll();
     return createJsonResponse(
@@ -62,6 +84,11 @@ export class MenusController {
 
   @Get('recommended')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get recommended menus' })
+  @ApiResponse({
+    status: 200,
+    description: 'Recommended menus retrieved successfully',
+  })
   async getRecommendedMenus(): Promise<JsonResponse<any[]>> {
     const recommendedMenus = await this.menusService.findRecommendedMenus();
     return createJsonResponse(
@@ -73,6 +100,11 @@ export class MenusController {
   }
 
   @Get('cafe/:id')
+  @ApiOperation({ summary: 'Get menus by cafe ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Menus retrieved successfully',
+  })
   async getMenusByCafe(
     @Param('id') cafeId: number,
   ): Promise<JsonResponse<any[]>> {
@@ -86,9 +118,16 @@ export class MenusController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.manager, UserRole.superadmin)
-  @HttpCode(HttpStatus.OK) // HTTP 200 for success
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Retrieve a menu by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Menu retrieved successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Menu not found',
+  })
   async findOne(@Param('id') id: number): Promise<JsonResponse<any>> {
     const menu = await this.menusService.findOne(id);
     if (menu) {
@@ -108,7 +147,16 @@ export class MenusController {
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.manager, UserRole.superadmin)
-  @HttpCode(HttpStatus.OK) // HTTP 200 for success
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update a menu by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Menu updated successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Menu not found',
+  })
   async update(
     @Param('id') id: number,
     @Body() updateMenuDto: UpdateMenuDto,
@@ -134,9 +182,17 @@ export class MenusController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.manager, UserRole.superadmin)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a menu by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Menu deleted successfully',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Menu not found',
+  })
   async remove(
-    @Param('id')
-    id: number,
+    @Param('id') id: number,
     @Request() req,
   ): Promise<JsonResponse<void>> {
     const userId = req.user.id;

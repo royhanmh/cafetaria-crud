@@ -12,6 +12,12 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Cafe } from './entities/cafe.entity';
 import { CafesService } from './cafes.service';
 import { CreateCafeDto } from './dto/create-cafe.dto';
@@ -22,6 +28,8 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/role.decorator';
 import { UserRole } from 'src/users/user-role.enum';
 
+@ApiTags('cafes') // Tag for grouping in Swagger UI
+@ApiBearerAuth()
 @Controller('cafes')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class CafesController {
@@ -30,6 +38,12 @@ export class CafesController {
   @Post()
   @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new cafe' }) // Summary for the operation
+  @ApiResponse({
+    status: 201,
+    description: 'Cafe created successfully.',
+    type: Cafe,
+  })
   async createCafe(
     @Body() createCafeDto: CreateCafeDto,
   ): Promise<JsonResponse<Cafe>> {
@@ -45,6 +59,12 @@ export class CafesController {
   @Get()
   @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Retrieve all cafes' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cafes retrieved successfully.',
+    type: [Cafe],
+  })
   async getCafes(): Promise<JsonResponse<Cafe[]>> {
     const cafes = await this.cafesService.getCafes();
     return createJsonResponse(
@@ -58,6 +78,13 @@ export class CafesController {
   @Get(':id')
   @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Retrieve a cafe by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cafe retrieved successfully.',
+    type: Cafe,
+  })
+  @ApiResponse({ status: 404, description: 'Cafe not found.' })
   async getCafeById(@Param('id') id: number): Promise<JsonResponse<Cafe>> {
     const cafe = await this.cafesService.getCafeById(id);
     if (cafe) {
@@ -77,10 +104,16 @@ export class CafesController {
   @Put(':id')
   @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update a cafe by ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cafe updated successfully.',
+    type: Cafe,
+  })
   async updateCafe(
     @Param('id') id: number,
     @Body() updateCafeDto: UpdateCafeDto,
-    @Request() req, // Use the Request decorator to access JWT data
+    @Request() req,
   ): Promise<JsonResponse<Cafe>> {
     const userId = req.user.id; // Extract the user ID from JWT token
     const userRole = req.user.role; // Extract the user role from JWT token
@@ -103,6 +136,8 @@ export class CafesController {
   @Delete(':id')
   @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a cafe by ID' })
+  @ApiResponse({ status: 200, description: 'Cafe deleted successfully.' })
   async deleteCafe(
     @Param('id') id: number,
     @Request() req,
@@ -119,7 +154,13 @@ export class CafesController {
   @Roles(UserRole.superadmin, UserRole.owner)
   @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.OK)
-  async getCafesByManager(
+  @ApiOperation({ summary: 'Retrieve cafes by owner ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Cafes retrieved successfully.',
+    type: [Cafe],
+  })
+  async getCafesByOwner(
     @Param('id') ownerId: number,
   ): Promise<JsonResponse<Cafe[]>> {
     const cafes = await this.cafesService.getCafesByOwner(ownerId);

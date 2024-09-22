@@ -11,6 +11,7 @@ import {
   NotFoundException,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -21,6 +22,8 @@ import { Roles } from 'src/auth/role.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { UserRole } from './user-role.enum';
 
+@ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
@@ -28,7 +31,9 @@ export class UsersController {
 
   @Post()
   @Roles(UserRole.superadmin)
-  @HttpCode(HttpStatus.CREATED) // HTTP 201 for creation
+  @HttpCode(HttpStatus.CREATED)
+  @ApiResponse({ status: 201, description: 'User created successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   async createUser(
     @Body() createUserDto: CreateUserDto,
   ): Promise<JsonResponse<User>> {
@@ -43,7 +48,8 @@ export class UsersController {
 
   @Get()
   @Roles(UserRole.superadmin)
-  @HttpCode(HttpStatus.OK) // HTTP 200 for success
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'Users retrieved successfully.' })
   async getUsers(): Promise<JsonResponse<User[]>> {
     const users = await this.userService.getUsers();
     return createJsonResponse(
@@ -56,7 +62,9 @@ export class UsersController {
 
   @Get(':id')
   @Roles(UserRole.superadmin)
-  @HttpCode(HttpStatus.OK) // HTTP 200 for success
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'User retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
   async getUserById(@Param('id') id: number): Promise<JsonResponse<User>> {
     const user = await this.userService.getUserById(id);
     if (user) {
@@ -75,7 +83,9 @@ export class UsersController {
 
   @Put(':id')
   @Roles(UserRole.superadmin)
-  @HttpCode(HttpStatus.OK) // HTTP 200 for success
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'User updated successfully.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
   async updateUser(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -91,7 +101,9 @@ export class UsersController {
 
   @Delete(':id')
   @Roles(UserRole.superadmin)
-  @HttpCode(HttpStatus.OK) // Return 200 for successful operation
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({ status: 200, description: 'User deleted successfully.' })
+  @ApiResponse({ status: 404, description: 'User not found.' })
   async deleteUser(@Param('id') id: number): Promise<JsonResponse<void>> {
     const user = await this.userService.getUserById(id);
 

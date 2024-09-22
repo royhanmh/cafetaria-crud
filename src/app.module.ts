@@ -10,6 +10,8 @@ import { CafesModule } from './cafes/cafes.module';
 import { Cafe } from './cafes/entities/cafe.entity';
 import { MenusModule } from './menus/menus.module';
 import { Menu } from './menus/entities/menu.entity';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -24,12 +26,24 @@ import { Menu } from './menus/entities/menu.entity';
       entities: [User, Cafe, Menu],
       synchronize: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 6000,
+        limit: 5,
+      },
+    ]),
     UsersModule,
     CafesModule,
     AuthModule,
     MenusModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard, // Add ThrottlerGuard globally
+    },
+  ],
 })
 export class AppModule {}

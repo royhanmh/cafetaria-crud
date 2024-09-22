@@ -100,4 +100,8 @@ export class CafesService {
     // Delete the cafe
     await this.cafeRepository.delete(id);
   }
+
+  async getCafesByManager(managerId: number): Promise<Cafe[]> {
+    return this.cafeRepository.find({ where: { ownerId: managerId } });
+  }
 }

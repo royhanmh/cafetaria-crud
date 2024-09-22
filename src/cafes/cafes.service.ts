@@ -135,8 +135,8 @@ export class CafesService {
     await this.cafeRepository.delete(id);
   }
 
-  async getCafesByManager(managerId: number): Promise<Cafe[]> {
-    return this.cafeRepository.find({ where: { ownerId: managerId } });
+  async getCafesByOwner(ownerId: number): Promise<Cafe[]> {
+    return this.cafeRepository.find({ where: { ownerId: ownerId } });
   }
 
   async isManagerManagingCafe(managerId: number): Promise<boolean> {

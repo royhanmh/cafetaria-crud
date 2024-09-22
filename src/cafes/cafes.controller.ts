@@ -115,14 +115,14 @@ export class CafesController {
     return createJsonResponse(true, 'Cafe deleted successfully', HttpStatus.OK);
   }
 
-  @Get('manager/:id')
+  @Get('owner/:id')
   @Roles(UserRole.superadmin, UserRole.owner)
   @UseGuards(RolesGuard)
   @HttpCode(HttpStatus.OK)
   async getCafesByManager(
-    @Param('id') managerId: number,
+    @Param('id') ownerId: number,
   ): Promise<JsonResponse<Cafe[]>> {
-    const cafes = await this.cafesService.getCafesByManager(managerId);
+    const cafes = await this.cafesService.getCafesByOwner(ownerId);
     return createJsonResponse(
       true,
       'Cafes retrieved successfully',

@@ -10,6 +10,7 @@ import {
   HttpStatus,
   NotFoundException,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { Cafe } from './entities/cafe.entity';
 import { CafesService } from './cafes.service';
@@ -79,8 +80,18 @@ export class CafesController {
   async updateCafe(
     @Param('id') id: number,
     @Body() updateCafeDto: UpdateCafeDto,
+    @Request() req, // Use the Request decorator to access JWT data
   ): Promise<JsonResponse<Cafe>> {
-    const updatedCafe = await this.cafesService.updateCafe(id, updateCafeDto);
+    const userId = req.user.id; // Extract the user ID from JWT token
+    const userRole = req.user.role; // Extract the user role from JWT token
+
+    const updatedCafe = await this.cafesService.updateCafe(
+      id,
+      updateCafeDto,
+      userId,
+      userRole,
+    );
+
     return createJsonResponse(
       true,
       'Cafe updated successfully',
@@ -90,16 +101,17 @@ export class CafesController {
   }
 
   @Delete(':id')
-  @Roles(UserRole.superadmin)
+  @Roles(UserRole.owner, UserRole.superadmin)
   @HttpCode(HttpStatus.OK)
-  async deleteCafe(@Param('id') id: number): Promise<JsonResponse<void>> {
-    const cafe = await this.cafesService.getCafeById(id);
+  async deleteCafe(
+    @Param('id') id: number,
+    @Request() req,
+  ): Promise<JsonResponse<void>> {
+    const userId = req.user.id;
+    const userRole = req.user.role;
 
-    if (!cafe) {
-      return createJsonResponse(false, 'Cafe not found', HttpStatus.NOT_FOUND);
-    }
+    await this.cafesService.deleteCafe(id, userId, userRole);
 
-    await this.cafesService.deleteCafe(id);
     return createJsonResponse(true, 'Cafe deleted successfully', HttpStatus.OK);
   }
 }

@@ -21,7 +21,6 @@ export class CafesService {
   ) {}
 
   async createCafe(createCafeDto: CreateCafeDto): Promise<Cafe> {
-    // Check if the owner exists and has the 'owner' role
     const owner = await this.userRepository.findOne({
       where: { id: createCafeDto.ownerId },
     });
@@ -34,7 +33,6 @@ export class CafesService {
       throw new ForbiddenException('User is not an owner');
     }
 
-    // Proceed to create the cafe
     const cafe = this.cafeRepository.create(createCafeDto);
     return this.cafeRepository.save(cafe);
   }
@@ -47,30 +45,59 @@ export class CafesService {
     return this.cafeRepository.findOne({ where: { id } });
   }
 
-  async updateCafe(id: number, updateCafeDto: UpdateCafeDto): Promise<Cafe> {
+  async updateCafe(
+    id: number,
+    updateCafeDto: UpdateCafeDto,
+    userId: number,
+    userRole: UserRole, // Add the user's role as a parameter
+  ): Promise<Cafe> {
+    // Fetch the cafe to check ownership and existence
     const cafe = await this.cafeRepository.findOne({ where: { id } });
+
     if (!cafe) {
       throw new NotFoundException('Cafe not found');
+    }
+
+    if (userRole == UserRole.owner && cafe.ownerId !== userId) {
+      throw new ForbiddenException('You are not allowed to update this cafe');
     }
 
     if (updateCafeDto.ownerId) {
       const owner = await this.userRepository.findOne({
         where: { id: updateCafeDto.ownerId },
       });
+
       if (!owner) {
         throw new NotFoundException('Owner not found');
       }
+
       if (owner.role !== UserRole.owner) {
-        throw new ForbiddenException('User is not an owner');
+        throw new ForbiddenException('The new user is not an owner');
       }
     }
 
+    // Update the cafe
     await this.cafeRepository.update(id, updateCafeDto);
 
     return this.getCafeById(id);
   }
 
-  async deleteCafe(id: number): Promise<void> {
+  async deleteCafe(
+    id: number,
+    userId: number,
+    userRole: UserRole,
+  ): Promise<void> {
+    const cafe = await this.cafeRepository.findOne({ where: { id } });
+
+    if (!cafe) {
+      throw new NotFoundException('Cafe not found');
+    }
+
+    if (userRole == UserRole.owner && cafe.ownerId !== userId) {
+      throw new ForbiddenException('You are not allowed to update this cafe');
+    }
+
+    // Delete the cafe
     await this.cafeRepository.delete(id);
   }
 }

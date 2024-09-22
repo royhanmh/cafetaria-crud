@@ -14,4 +14,7 @@ export class UpdateCafeDto extends PartialType(CreateCafeDto) {
 
   @IsOptional()
   ownerId?: number;
+
+  @IsOptional()
+  managerId?: number;
 }

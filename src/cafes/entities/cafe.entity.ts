@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 
 @Entity()
@@ -24,7 +25,14 @@ export class Cafe {
   @Column()
   ownerId: number;
 
+  @Column()
+  managerId: number;
+
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'ownerId' })
   owner: User;
+
+  @OneToOne(() => User, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'managerId' })
+  manager: User;
 }

@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -24,13 +25,26 @@ export class CafesService {
     const owner = await this.userRepository.findOne({
       where: { id: createCafeDto.ownerId },
     });
+    const manager = await this.userRepository.findOne({
+      where: { id: createCafeDto.managerId },
+    });
 
-    if (!owner) {
-      throw new NotFoundException('Owner not found');
+    if (!owner || !manager) {
+      throw new NotFoundException('User not found');
     }
 
     if (owner.role !== UserRole.owner) {
       throw new ForbiddenException('User is not an owner');
+    }
+    if (manager.role !== UserRole.manager) {
+      throw new ForbiddenException('User is not an manager');
+    }
+
+    const isManaging = await this.isManagerManagingCafe(
+      createCafeDto.managerId,
+    );
+    if (isManaging) {
+      throw new ConflictException('Manager is already managing a cafe');
     }
 
     const cafe = this.cafeRepository.create(createCafeDto);
@@ -76,6 +90,26 @@ export class CafesService {
       }
     }
 
+    if (updateCafeDto.managerId) {
+      const manager = await this.userRepository.findOne({
+        where: { id: updateCafeDto.managerId },
+      });
+      const isManaging = await this.isManagerManagingCafe(
+        updateCafeDto.managerId,
+      );
+      if (!manager) {
+        throw new NotFoundException('Manager not found');
+      }
+
+      if (manager.role !== UserRole.manager) {
+        throw new ForbiddenException('The new user is not an manager');
+      }
+
+      if (isManaging) {
+        throw new ConflictException('Manager is already managing a cafe');
+      }
+    }
+
     // Update the cafe
     await this.cafeRepository.update(id, updateCafeDto);
 
@@ -103,5 +137,12 @@ export class CafesService {
 
   async getCafesByManager(managerId: number): Promise<Cafe[]> {
     return this.cafeRepository.find({ where: { ownerId: managerId } });
+  }
+
+  async isManagerManagingCafe(managerId: number): Promise<boolean> {
+    const cafe = await this.cafeRepository.findOne({
+      where: { managerId: managerId },
+    });
+    return !!cafe; // Returns true if a cafe is found, false otherwise
   }
 }

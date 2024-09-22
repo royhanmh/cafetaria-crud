@@ -28,4 +28,8 @@ export class CreateCafeDto {
   @IsNotEmpty()
   @IsNumber()
   ownerId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  managerId: number;
 }

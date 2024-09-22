@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { CafesModule } from './cafes/cafes.module';
 import { Cafe } from './cafes/entities/cafe.entity';
 import { MenusModule } from './menus/menus.module';
+import { Menu } from './menus/entities/menu.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { MenusModule } from './menus/menus.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [User, Cafe],
+      entities: [User, Cafe, Menu],
       synchronize: true,
     }),
     UsersModule,

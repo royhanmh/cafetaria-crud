@@ -160,10 +160,25 @@ export class CafesController {
     description: 'Cafes retrieved successfully.',
     type: [Cafe],
   })
+  @ApiResponse({
+    status: 404,
+    description: 'No cafes found for the given owner ID.',
+  })
   async getCafesByOwner(
     @Param('id') ownerId: number,
   ): Promise<JsonResponse<Cafe[]>> {
     const cafes = await this.cafesService.getCafesByOwner(ownerId);
+
+    if (!cafes || cafes.length === 0) {
+      throw new NotFoundException(
+        createJsonResponse(
+          false,
+          'No cafes found for the given owner ID',
+          HttpStatus.NOT_FOUND,
+        ),
+      );
+    }
+
     return createJsonResponse(
       true,
       'Cafes retrieved successfully',

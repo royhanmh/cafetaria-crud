@@ -11,4 +11,7 @@ export class UpdateCafeDto extends PartialType(CreateCafeDto) {
 
   @IsOptional()
   phoneNumber?: string;
+
+  @IsOptional()
+  ownerId?: number;
 }

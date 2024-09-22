@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, Matches, Length } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  Matches,
+  Length,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateCafeDto {
   @IsNotEmpty()
@@ -20,5 +26,6 @@ export class CreateCafeDto {
   phoneNumber: string;
 
   @IsNotEmpty()
+  @IsNumber()
   ownerId: number;
 }

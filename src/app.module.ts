@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -12,6 +12,8 @@ import { MenusModule } from './menus/menus.module';
 import { Menu } from './menus/entities/menu.entity';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { seed } from './seed/seed.service';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { APP_GUARD } from '@nestjs/core';
     CafesModule,
     AuthModule,
     MenusModule,
+    SeedModule,
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [AppController],
   providers: [
@@ -44,6 +48,13 @@ import { APP_GUARD } from '@nestjs/core';
       provide: APP_GUARD,
       useClass: ThrottlerGuard, // Add ThrottlerGuard globally
     },
+    seed,
   ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly userSeedService: seed) {}
+
+  async onModuleInit() {
+    await this.userSeedService.runSeed();
+  }
+}

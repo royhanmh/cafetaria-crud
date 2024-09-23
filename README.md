@@ -14,60 +14,60 @@ A NestJS application for managing cafes and their menus, including features for 
 ## Table of Contents
 
 - [Installation](#installation)
-
 - [Usage](#usage)
-
 - [API Endpoints](#api-endpoints)
-
 - [Rate Limiting](#rate-limiting)
-
+- [Seeded Users](#seeded-users)
 - [Technologies Used](#technologies-used)
-
 - [License](#license)
 
 ## Installation
 
 1. **Clone the repository:**
 
-```bash
-
-git clone https://github.com/your-username/cafetaria-crud.git
-
-cd cafetaria-crud
-
-```
+   ```bash
+   git clone https://github.com/your-username/cafetaria-crud.git
+   cd cafetaria-crud
+   ```
 
 2. **Install dependencies:**
 
-```bash
-
-npm install
-
-```
+   ```bash
+   npm install
+   ```
 
 3. **Set up your environment variables:**
+   Create a `.env` file in the root directory and configure your database and JWT settings. Example:
 
-Create a `.env` file in the root directory and configure your database and JWT settings. Example:
-
-```plaintext
-
-DATABASE_URL=cafetaria_db
-
-JWT_SECRET=jwtSecret123
-
-```
+   ```plaintext
+   DB_TYPE=mysql
+   DB_HOST=localhost
+   DB_PORT=3306
+   DB_USERNAME=root
+   DB_PASSWORD=
+   DB_DATABASE=cafetaria_db
+   JWT_SECRET=jwtSecret
+   ```
 
 4. **Run the application:**
 
-```bash
-
-npm run start
-
-```
+   ```bash
+   npm run start
+   ```
 
 ## Usage
 
 You can interact with the API using tools like Postman or cURL. Make sure to authenticate users and set the necessary headers as required by your endpoints.
+
+### Accessing Swagger Documentation
+
+Once the application is running, you can access the Swagger documentation by navigating to the following URL in your web browser:
+
+```
+http://localhost:3000/api
+```
+
+This will open an interactive API documentation page where you can view all available endpoints, request parameters, and response formats.
 
 ## API Endpoints
 
@@ -77,21 +77,20 @@ You can interact with the API using tools like Postman or cURL. Make sure to aut
 
 - **Request Body**:
 
-```json
-{
-  "username": "your_username",
-
-  "password": "your_password"
-}
-```
+  ```json
+  {
+    "username": "your_username",
+    "password": "your_password"
+  }
+  ```
 
 - **Response**:
 
-```json
-{
-  "access_token": "your_jwt_token"
-}
-```
+  ```json
+  {
+    "access_token": "your_jwt_token"
+  }
+  ```
 
 ### Users (Requires authentication)
 
@@ -99,17 +98,14 @@ You can interact with the API using tools like Postman or cURL. Make sure to aut
 
 - **Request Body**:
 
-```json
-{
-  "username": "new_username",
-
-  "fullname": "Full Name",
-
-  "password": "securePassword",
-
-  "role": "owner" // or "manager", "superadmin"
-}
-```
+  ```json
+  {
+    "username": "new_username",
+    "fullname": "Full Name",
+    "password": "securePassword",
+    "role": "owner" // or "manager", "superadmin"
+  }
+  ```
 
 - **Get All Users**: `GET /users` (Requires `superadmin` role)
 
@@ -119,17 +115,14 @@ You can interact with the API using tools like Postman or cURL. Make sure to aut
 
 - **Request Body** (optional fields):
 
-```json
-{
-  "username": "updated_username",
-
-  "fullname": "Updated Full Name",
-
-  "password": "newSecurePassword",
-
-  "role": "manager" // or "owner", "superadmin"
-}
-```
+  ```json
+  {
+    "username": "updated_username",
+    "fullname": "Updated Full Name",
+    "password": "newSecurePassword",
+    "role": "manager" // or "owner", "superadmin"
+  }
+  ```
 
 - **Delete User**: `DELETE /users/:id` (Requires `superadmin` role)
 
@@ -139,19 +132,15 @@ You can interact with the API using tools like Postman or cURL. Make sure to aut
 
 - **Request Body**:
 
-```json
-{
-  "name": "Cafe Name",
-
-  "address": "Cafe Address",
-
-  "phoneNumber": "+62123456789",
-
-  "ownerId": 1,
-
-  "managerId": 2
-}
-```
+  ```json
+  {
+    "name": "Cafe Name",
+    "address": "Cafe Address",
+    "phoneNumber": "+62123456789",
+    "ownerId": 1,
+    "managerId": 2
+  }
+  ```
 
 - **Get All Cafes**: `GET /cafes` (No authentication required)
 
@@ -161,19 +150,15 @@ You can interact with the API using tools like Postman or cURL. Make sure to aut
 
 - **Request Body** (optional fields):
 
-```json
-{
-  "name": "Updated Cafe Name",
-
-  "address": "Updated Address",
-
-  "phoneNumber": "+62198765432",
-
-  "ownerId": 1,
-
-  "managerId": 2
-}
-```
+  ```json
+  {
+    "name": "Updated Cafe Name",
+    "address": "Updated Address",
+    "phoneNumber": "+62198765432",
+    "ownerId": 1,
+    "managerId": 2
+  }
+  ```
 
 - **Delete Cafe**: `DELETE /cafes/:id` (Requires authentication, `superadmin` role)
 
@@ -185,17 +170,14 @@ You can interact with the API using tools like Postman or cURL. Make sure to aut
 
 - **Request Body**:
 
-```json
-{
-  "name": "Menu Item",
-
-  "price": 10.99,
-
-  "isRecommendation": true,
-
-  "cafeId": 1
-}
-```
+  ```json
+  {
+    "name": "Menu Item",
+    "price": 10.99,
+    "isRecommendation": true,
+    "cafeId": 1
+  }
+  ```
 
 - **Get All Menus**: `GET /menus` (No authentication required)
 
@@ -209,17 +191,14 @@ You can interact with the API using tools like Postman or cURL. Make sure to aut
 
 - **Request Body** (optional fields):
 
-```json
-{
-  "name": "Updated Menu Item",
-
-  "price": 12.99,
-
-  "isRecommendation": false,
-
-  "cafeId": 1
-}
-```
+  ```json
+  {
+    "name": "Updated Menu Item",
+    "price": 12.99,
+    "isRecommendation": false,
+    "cafeId": 1
+  }
+  ```
 
 - **Delete Menu**: `DELETE /menus/:id` (Requires authentication, `owner` or `superadmin` role)
 
@@ -230,7 +209,6 @@ The application includes a rate limiter to prevent abuse of the API. By default,
 ### Testing Rate Limiting
 
 1. Send requests to any endpoint multiple times (more than the limit).
-
 2. The first `10` requests will succeed; subsequent requests will receive a `429 Too Many Requests` response.
 
 ## Seeded Users
@@ -239,33 +217,23 @@ The application includes a default set of seeded users to facilitate testing and
 
 1. **Super Admin**
 
-- **Username**: `superadmin`
-
-- **Full Name**: `Super Admin`
-
-- **Password**: `password123` (Note: Use a hashing function in production)
-
-- **Role**: `superadmin`
+   - **Username**: `superadmin`
+   - **Full Name**: `Super Admin`
+   - **Password**: `password123`
+   - **Role**: `superadmin`
 
 2. **Owner**
 
-- **Username**: `owner1`
-
-- **Full Name**: `Owner One`
-
-- **Password**: `password123`
-
-- **Role**: `owner`
+   - **Username**: `owner1`
+   - **Full Name**: `Owner One`
+   - **Password**: `password123`
+   - **Role**: `owner`
 
 3. **Manager**
-
-- **Username**: `manager1`
-
-- **Full Name**: `Manager One`
-
-- **Password**: `password123`
-
-- **Role**: `manager`
+   - **Username**: `manager1`
+   - **Full Name**: `Manager One`
+   - **Password**: `password123`
+   - **Role**: `manager`
 
 These users can be used to authenticate and test the application. If users already exist in the database, the seeding process will skip creating them again.
 
@@ -274,23 +242,14 @@ You can modify the seeding logic in the `seed.service` to add additional users o
 ## Technologies Used
 
 - **NestJS**: A progressive Node.js framework
-
 - **TypeScript**: Strongly-typed JavaScript
-
 - **MySQL**: Database for storing cafe and menu data
-
 - **Argon2**: Password hashing algorithm
-
 - **JWT**: JSON Web Tokens for user authentication
-
-- **Swagger**: API documentation
-
+- **Swagger**: API documentation tool for generating interactive API docs
 - **Class Validator**: For request validation
-
 - **Rate Limiter**: To limit API request rates
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
----
+Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
